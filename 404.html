@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Directory</title>
+  <script>
+    /**
+     * GitHub Pages 404 redirect trick for History API (pushState) routing.
+     *
+     * When someone visits  https://santhoshmcar127.github.io/-/3
+     * GitHub Pages serves this 404.html (because it has no real file at /-/3).
+     * This script encodes the path into a query string and redirects to the root,
+     * where index.html decodes it and restores the correct URL via replaceState.
+     *
+     * segmentCount = 1  →  keeps "/users" (the repo name) in the URL
+     */
+    /**
+     * Hosted at: https://santhoshmcar127.github.io/-/
+     *
+     * Visited:    https://santhoshmcar127.github.io/-/3
+     * Redirects:  https://santhoshmcar127.github.io/-/?p=/3
+     * index.html restores: /-/3  ✅
+     */
+    (function() {
+      var l = window.location;
+      var segments = l.pathname.split('/');        // ["", "users", "3"]
+      var subPath  = '/' + segments.slice(2).join('/');  // "/3"
+
+      if (subPath === '/' || subPath === '') return; // already at root, do nothing
+
+      var encodedSubPath = subPath.replace(/&/g, '~and~');
+      var encodedQuery   = l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '';
+
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        '/-/' +       // /-/
+        '?p=' + encodedSubPath +         // ?p=/3
+        encodedQuery +
+        l.hash
+      );
+    })();
+  </script>
+</head>
+<body></body>
+</html>
